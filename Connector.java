@@ -25,7 +25,7 @@ selectFLights();}
 
       while (results.next()) {
         
-        //this.animalList[i]= new Animal(results.getInt("AnimalID"),results.getString("AnimalNickname"),results.getString("AnimalSpecies"));AvailableSeats
+
         Flight newFlight = new Flight(results.getInt("FlightID"), results.getString("FlightStartPoint"), results.getString("FlightDest"),results.getDouble("FlightCost"), results.getDate("FlightArrivalTime"),results.getDate("FlightLeavingTime"),results.getInt("AvailableBussinesSeats"),results.getInt("AvailableComfortSeats"),results.getInt("AvailableOrdinarySeats"));
 
         //Adding read object to the arraylist of animals
