@@ -5,21 +5,30 @@ public class Flight {
     private String flightStartPoint;
     private String flightDest;
 
-    private int availableSeats;
+  
     private double flightCost;
     private Date flightArrivalTime;
     private Date flightLeavingTime;
 
+    // Additional data members
+    private int availableBusinessSeats;
+    private int availableComfortSeats;
+    private int availableOrdinarySeats;
+
     // Constructor
-    public Flight(int flightNumber, String flightStartPoint, String flightDest, int availableSeats,
-                  double flightCost, Date flightArrivalTime, Date flightLeavingTime) {
+    public Flight(int flightNumber, String flightStartPoint, String flightDest,
+                  double flightCost, Date flightArrivalTime, Date flightLeavingTime,
+                  int availableBusinessSeats, int availableComfortSeats, int availableOrdinarySeats) {
         this.flightNumber = flightNumber;
         this.flightStartPoint = flightStartPoint;
         this.flightDest = flightDest;
-        this.availableSeats = availableSeats;
+       
         this.flightCost = flightCost;
         this.flightArrivalTime = flightArrivalTime;
         this.flightLeavingTime = flightLeavingTime;
+        this.availableBusinessSeats = availableBusinessSeats;
+        this.availableComfortSeats = availableComfortSeats;
+        this.availableOrdinarySeats = availableOrdinarySeats;
     }
 
     // Getter methods
@@ -35,9 +44,7 @@ public class Flight {
         return flightDest;
     }
 
-    public int getAvailableSeats() {
-        return availableSeats;
-    }
+  
 
     public double getFlightCost() {
         return flightCost;
@@ -49,6 +56,31 @@ public class Flight {
 
     public Date getFlightLeavingTime() {
         return flightLeavingTime;
+    }
+
+    // Additional getters and setters
+    public int getAvailableBusinessSeats() {
+        return availableBusinessSeats;
+    }
+
+    public void setAvailableBusinessSeats(int availableBusinessSeats) {
+        this.availableBusinessSeats = availableBusinessSeats;
+    }
+
+    public int getAvailableComfortSeats() {
+        return availableComfortSeats;
+    }
+
+    public void setAvailableComfortSeats(int availableComfortSeats) {
+        this.availableComfortSeats = availableComfortSeats;
+    }
+
+    public int getAvailableOrdinarySeats() {
+        return availableOrdinarySeats;
+    }
+
+    public void setAvailableOrdinarySeats(int availableOrdinarySeats) {
+        this.availableOrdinarySeats = availableOrdinarySeats;
     }
 
     // Setter methods (if needed)
@@ -64,9 +96,7 @@ public class Flight {
         this.flightDest = flightDest;
     }
 
-    public void setAvailableSeats(int availableSeats) {
-        this.availableSeats = availableSeats;
-    }
+   
 
     public void setFlightCost(double flightCost) {
         this.flightCost = flightCost;
@@ -80,6 +110,6 @@ public class Flight {
         this.flightLeavingTime = flightLeavingTime;
     }
 
-    // Other methods if needed
-    // ...
+    
 }
+
