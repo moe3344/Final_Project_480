@@ -1,3 +1,4 @@
+package Backend;
 public class Seat {
     private String seatNumber;
     private String seatType;

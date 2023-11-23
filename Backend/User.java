@@ -1,3 +1,4 @@
+package Backend;
 public class User {
     private int selectedFlight;
     private double dueAmount;
