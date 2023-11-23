@@ -4,7 +4,10 @@ import java.util.ArrayList;
 public class Connector{
  protected Connection dbConnect;
   protected ResultSet results;
-  Connector(){createConnection();
+   protected ArrayList < Flight > myFlights;
+  Connector(){
+     myFlights = new ArrayList <> ();
+    createConnection();
 selectFLights();}
   public void createConnection() {
 
@@ -15,7 +18,7 @@ selectFLights();}
     }
   }
   public void selectFLights () {
-    ArrayList < Flight > myFlights = new ArrayList <> ();
+   
 
     try {
 
@@ -37,5 +40,9 @@ selectFLights();}
     catch (SQLException ex) {
         ex.printStackTrace();
       }
+  }
+  public ArrayList<Flight> getFlights(){
+    return myFlights;
+
   }
 }
