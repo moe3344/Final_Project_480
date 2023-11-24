@@ -1,26 +1,26 @@
-import logo from './logo.svg';
+import React, { useState } from 'react';
 import './App.css';
 
 import GetDataComponent from './components/apiCall';
+import Login from './pages/loginPage';
+import HomePage from './pages/homePage';
+
 
 function App() {
+
+  // Two string state variables
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  // One boolean state variable
+  const [loggedIn, setLoggedIn] = useState(false);
+
+
   return (
     <div className="App">
-      <GetDataComponent />
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      {!loggedIn ? <Login emailProp={setEmail} passwordProp={setPassword}
+      loggedInProp={setLoggedIn}/> :
+      <div> <HomePage email={email}/> </div> }
     </div>
   );
 }
