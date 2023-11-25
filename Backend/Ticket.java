@@ -1,13 +1,22 @@
 package Backend;
+
+import java.sql.Date;
+
 public class Ticket {
     private int ticketNumber;
     private String passengerName;
     private Seat seat;
     private double ticketPrice;
+    private String flightDest;
+    private String flightStartPoint;
+    private Date flightDate;
 
     // Constructor
-    public Ticket(int ticketNumber, String passengerName, Seat seat, double ticketPrice) {
-        this.ticketNumber = ticketNumber;
+    public Ticket(String passengerName, Date flightDate, Seat seat, double ticketPrice, String flightStartPoint,
+            String flightDest) {
+        this.flightDate = flightDate;
+        this.flightDest = flightDest;
+        this.flightStartPoint = flightStartPoint;
         this.passengerName = passengerName;
         this.seat = seat;
         this.ticketPrice = ticketPrice;

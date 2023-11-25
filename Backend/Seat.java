@@ -1,16 +1,19 @@
 package Backend;
+
 public class Seat {
-    private String seatNumber;
+    private int seatNumber;
     private String seatType;
+    private double seatCost = 100;
 
     // Constructor
-    public Seat(String seatNumber, String seatType) {
+    public Seat(int seatNumber, String seatType) {
         this.seatNumber = seatNumber;
         this.seatType = seatType;
+
     }
 
     // Getter methods
-    public String getSeatNumber() {
+    public int getSeatNumber() {
         return seatNumber;
     }
 
@@ -19,11 +22,21 @@ public class Seat {
     }
 
     // Setter methods
-    public void setSeatNumber(String seatNumber) {
+    public void setSeatNumber(int seatNumber) {
         this.seatNumber = seatNumber;
     }
 
     public void setSeatType(String seatType) {
         this.seatType = seatType;
     }
+
+    public double getSeatCost() {
+        if (seatNumber <= 2) {
+            return ((double) 2.1 * seatCost);
+        } else if (seatNumber < 7) {
+            return ((double) 1.4 * seatCost);
+        } else
+            return 100;
+    }
+
 }

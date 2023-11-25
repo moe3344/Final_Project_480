@@ -2,14 +2,8 @@ package Backend;
 
 import java.sql.*;
 import java.util.ArrayList;
-
-import java.sql.Connection;
-
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 
 import Backend.Address;
 import Backend.Flight;
@@ -18,111 +12,52 @@ import Backend.Seat;
 import Backend.Ticket;
 
 public class UserManager {
+    private User currentUser;
+    private ArrayList<User> users = new ArrayList<>();
 
     private static UserManager instance;
     protected ArrayList<Flight> myFlights = new ArrayList<>();
     protected ResultSet results;
     protected Connection dbConnect;
+    private String name;
+    private String password;
+    private static int userID = 1;
 
     // JDBC URL, username, and password of MySQL server
 
     private static final String JDBC_URL = "jdbc:mysql://localhost/ewr";
     private static final String DB_USER = "root";
     private static final String DB_PASSWORD = "0953326601";
-    private int selectedFlight;
-    private double dueAmount;
-    private String name;
-    private String password;
-    private int phone;
-    private Address address;
-    private Card creditCard;
-    private Seat selectedSeat;
-    private Ticket selectedTicket;
-    private Receipt customerReceipt;
-
-    // Constructor (you can add it if needed)
-    private UserManager(String name, String pass) {
-        this.name = name;
-        this.password = pass;
-    }
-
-    // Getter methods
-    public int getSelectedFlight() {
-        return selectedFlight;
-    }
-
-    public double getDueAmount() {
-        return dueAmount;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public int getPhone() {
-        return phone;
-    }
-
-    public Address getAddress() {
-        return address;
-    }
-
-    public Card getCreditCard() {
-        return creditCard;
-    }
-
-    public Seat getSelectedSeat() {
-        return selectedSeat;
-    }
-
-    public Ticket getSelectedTicket() {
-        return selectedTicket;
-    }
-
-    public Receipt getCustomerReceipt() {
-        return customerReceipt;
-    }
-
-    // Setter methods
-    public void setSelectedFlight(int selectedFlight) {
-        this.selectedFlight = selectedFlight;
-    }
-
-    public void setDueAmount(double dueAmount) {
-        this.dueAmount = dueAmount;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setPhone(int phone) {
-        this.phone = phone;
-    }
-
-    public void setAddress(Address address) {
-        this.address = address;
-    }
-
-    public void setCreditCard(Card creditCard) {
-        this.creditCard = creditCard;
-    }
-
-    public void setSelectedSeat(Seat selectedSeat) {
-        this.selectedSeat = selectedSeat;
-    }
-
-    public void setSelectedTicket(Ticket selectedTicket) {
-        this.selectedTicket = selectedTicket;
-    }
-
-    public void setCustomerReceipt(Receipt customerReceipt) {
-        this.customerReceipt = customerReceipt;
-    }
 
     // Private constructor to prevent instantiation from outside the class
     private UserManager() {
+
         // Initialization code, if needed
+    }
+
+    public ArrayList<User> getUsers() {
+        return users;
+    }
+
+    public void populateUsers() {
+        try {
+            dbConnect = DriverManager.getConnection("jdbc:mysql://localhost/ewr", "root", "0953326601");
+
+            Statement myStmt = dbConnect.createStatement();
+            results = myStmt.executeQuery("SELECT * FROM logedusers");
+
+            while (results.next()) {
+
+                User newUser = new User(results.getString("username"), results.getString("password"));
+
+                // Adding read object to the arraylist of animals
+                users.add(newUser);
+
+            }
+
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
     }
 
     // Public method to get the single instance of UserManager
@@ -159,6 +94,7 @@ public class UserManager {
 
             }
             for (Flight o : myFlights) {
+                System.out.print("    *   flightid: " + o.getFlightNumber());
                 System.out.print("    *   flight start point: " + o.getFlightStartPoint());
                 System.out.print("    *   flight Destenation point: " + o.getFlightDest());
                 System.out.print("    *   flight cost is:" + o.getFlightCost());
@@ -172,36 +108,155 @@ public class UserManager {
     }
 
     // Login method using JDBC
-    public boolean login() {
+    public boolean login(String nameUser, String pass) {
+        for (User o : users) {
+            if (o.getName().equals(nameUser)) {
+                currentUser = o;
+            }
+        }
+
         try (Connection connection = DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASSWORD)) {
-            String query = "SELECT * FROM users WHERE username = ? AND password = ?";
+            String query = "SELECT * FROM logedusers WHERE username = ? AND password = ?";
             try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-                preparedStatement.setString(1, this.name);
-                preparedStatement.setString(2, this.password);
+                preparedStatement.setString(1, nameUser); // Set username first
+                preparedStatement.setString(2, pass); // Set password second
                 try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                    if (resultSet.next()) {
+                        System.out.println("Log in successful");
+                    }
                     return resultSet.next(); // true if a matching user is found
+
                 }
             }
         } catch (SQLException e) {
-            System.out.println("please sign up!"); // Handle the exception according to your needs
+            System.out.println("Please sign up first"); // Handle the exception according to your needs
             return false;
+        }
+    }
+
+    public void createUser(String username, String password) {
+        User newUser = new User(username, password);
+
+        users.add(newUser);
+        int index = users.indexOf(newUser);
+        currentUser = users.get(index);
+
+        try (Connection connection = DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASSWORD)) {
+            String query = "INSERT INTO logedusers (password, username, dueAmount, phone, address, selectedSeat, flightID, flightCost, flightDest, flightStartPoint) VALUES (?,?,?,?,?,?,?,?,?,?)";
+            try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+                // Set values or null as needed
+                preparedStatement.setString(1, password);
+                preparedStatement.setString(2, username);
+                preparedStatement.setInt(3, 0); // Example value for dueAmount
+                preparedStatement.setNull(4, java.sql.Types.VARCHAR); // Example value for phone as null
+                preparedStatement.setNull(5, java.sql.Types.VARCHAR); // Example value for address as null
+                preparedStatement.setNull(6, java.sql.Types.VARCHAR); // Example value for selectedSeat as null
+                preparedStatement.setInt(7, 0); // Example value for flightID
+                preparedStatement.setInt(8, 0); // Example value for flightCost
+                preparedStatement.setNull(9, java.sql.Types.VARCHAR); // Example value for flightDest as null
+                preparedStatement.setNull(10, java.sql.Types.VARCHAR); // Example value for flightStartPoint as null
+
+                preparedStatement.executeUpdate();
+
+            }
+        } catch (SQLException e) {
+            e.printStackTrace(); // Handle the exception according to your needs
         }
     }
 
     // Signup method using JDBC
     public boolean signUp(String username, String password) {
         try (Connection connection = DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASSWORD)) {
-            String query = "INSERT INTO users (username, password) VALUES (?, ?)";
+            String query = "INSERT INTO users (userID, username, password) VALUES (?, ?, ?)";
             try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-                preparedStatement.setString(1, username);
-                preparedStatement.setString(2, password);
+                preparedStatement.setInt(1, userID); // Assuming userID is an integer
+                preparedStatement.setString(2, username);
+                preparedStatement.setString(3, password);
+
                 int rowsAffected = preparedStatement.executeUpdate();
+                createUser(username, password);
+                // Increment the static field directly
+                userID += 1;
+
                 return rowsAffected > 0; // true if the user is successfully inserted
             }
         } catch (SQLException e) {
-            System.out.println("Please Log in!");// Handle the exception according to your needs
+
+            System.out.println("you have an account please log in");
+            // according
+            // to your needs
             return false;
         }
+    }
+
+    public boolean userBookFlight(boolean userInsurance, int receiptNumber, int SeatNumber, String SeatLetter,
+            int flightID,
+            String phone, String city, String country, String state, String zipCode, String streetName,
+            String streetNumber,
+            String cardNumber, String expirationDate, int cvv) {
+        Address userAddress = new Address(streetNumber, streetName, city, state, zipCode, country);
+        currentUser.setAddress(userAddress);
+        currentUser.setPhone(phone);
+        Card userCard = new Card(cardNumber, expirationDate, cvv);
+        currentUser.setCreditCard(userCard);
+        Flight userSelectedFlight = myFlights.get(flightID - 1);
+
+        currentUser.setSelectedFlight(userSelectedFlight);
+        Seat userSeat = new Seat(SeatNumber, SeatLetter);
+        currentUser.setSelectedSeat(userSeat);
+        double totalAmount = 0.0;
+        if (userInsurance) {
+            totalAmount = userSelectedFlight.getFlightCost() + userSeat.getSeatCost() + 150;
+        } else {
+            totalAmount = userSelectedFlight.getFlightCost() + userSeat.getSeatCost();
+        }
+
+        currentUser.setFlightCost(totalAmount);
+        boolean validPayment = validatePayment(userCard);
+        if (validPayment) {
+            Date o = new Date();
+
+            Receipt userReceipt = new Receipt(receiptNumber, o, totalAmount, "CreditCard");
+            currentUser.setCustomerReceipt(userReceipt);
+
+            Ticket userTicket = new Ticket(currentUser.getName(), userSelectedFlight.getFlightLeavingTime(), userSeat,
+                    totalAmount, userSelectedFlight.getFlightDest(), userSelectedFlight.getFlightStartPoint());
+            currentUser.setSelectedTicket(userTicket);
+            return true;
+        } else {
+            System.out.println("payment declined");
+            return false;
+        }
+
+    }
+
+    public boolean validatePayment(Card creditCard) {
+        if (creditCard.getCardNumber().length() == 16) {
+            String comparisonDate = "11/2023";
+            String inputDate = creditCard.getExpirationDate();
+
+            // Compare the year part
+            String[] inputParts = inputDate.split("/");
+            String[] comparisonParts = comparisonDate.split("/");
+
+            // Compare years
+            int yearComparison = Integer.parseInt(inputParts[1]) - Integer.parseInt(comparisonParts[1]);
+            if (yearComparison > 0) {
+                return true;
+            } else if (yearComparison < 0) {
+                return false;
+            } else {
+                // Years are equal, check months
+                int monthComparison = Integer.parseInt(inputParts[0]) - Integer.parseInt(comparisonParts[0]);
+                if (monthComparison >= 0) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        }
+        return false;
+
     }
 
     // Other methods and properties related to user management
@@ -209,22 +264,27 @@ public class UserManager {
     // Example usage:
     public static void main(String[] args) {
         UserManager userManager = UserManager.getInstance();
-        userManager.setNameAndPassword("Mooud", "12345");
+        userManager.populateUsers();
+
         // Example login
-        boolean loginResult = userManager.login();
-        if (loginResult) {
-            System.out.println("Login successful!");
-        } else {
-            System.out.println("Login failed!");
-        }
 
         // Example signup
-        boolean signupResult = userManager.signUp("youtd", "145");
-        if (signupResult) {
-            System.out.println("Signup successful!");
-        } else {
-            System.out.println("Signup failed!");
+
+        boolean signupResult = userManager.signUp("Mohamad_Hammoud", "5");
+        // if (signupResult) {
+        // System.out.println("Signup successful!");
+        // }
+        for (User x : userManager.getUsers()) {
+            System.out.println("dd" + x.getName());
         }
         userManager.browseFLights();
+        boolean loginResult = userManager.login("Mohamad_Hammoud", "5");
+        if (loginResult) {
+            System.out.println("Login successful!");
+
+        } else {
+            System.out.println("fucked up ");
+        }
+
     }
 }
