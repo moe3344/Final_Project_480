@@ -182,7 +182,7 @@ public class UserManager {
             }
         } catch (SQLException e) {
 
-            System.out.println("you have an account please log in");
+            System.out.println("Sign up Failed, it seems you have an account please log in");
             // according
             // to your needs
             return false;
