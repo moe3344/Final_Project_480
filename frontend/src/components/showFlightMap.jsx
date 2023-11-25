@@ -4,6 +4,8 @@ import React, { useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
 
+import SeatMap from './seatMap';
+
 
 //TODO could add image later to card make it look better?
 // <Card.Img variant="top" src="https://media.united.com/images/Media%20Database/SDL/Travel/inflight/aircraft/777-200/777_200_(50_24_202)_V1_2272x649.gif" />
@@ -15,6 +17,7 @@ function ShowMap(props) {
 
   return (
     <div>
+        <SeatMap />
     <Card style={{ width: '18rem', display: "contents"}}>
       <Card.Body>
         <Card.Title>Flight To {props.flightProp.destination}</Card.Title>
