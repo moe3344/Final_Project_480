@@ -17,10 +17,6 @@ public class Seat {
         return seatNumber;
     }
 
-    public String getSeatType() {
-        return seatType;
-    }
-
     // Setter methods
     public void setSeatNumber(int seatNumber) {
         this.seatNumber = seatNumber;
@@ -37,6 +33,20 @@ public class Seat {
             return ((double) 1.4 * seatCost);
         } else
             return 100;
+    }
+
+    public String getSeatType() {
+        if (this.seatNumber <= 2) {
+            return "Business";
+        } else if (seatNumber < 7) {
+            return "Comfort";
+        } else
+            return "Ordinary";
+    }
+
+    public String stringSeat() {
+        String selSeat = seatNumber + seatType;
+        return selSeat;
     }
 
 }

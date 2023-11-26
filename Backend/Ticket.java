@@ -9,12 +9,11 @@ public class Ticket {
     private double ticketPrice;
     private String flightDest;
     private String flightStartPoint;
-    private Date flightDate;
 
     // Constructor
-    public Ticket(String passengerName, Date flightDate, Seat seat, double ticketPrice, String flightStartPoint,
+    public Ticket(String passengerName, Seat seat, double ticketPrice, String flightStartPoint,
             String flightDest) {
-        this.flightDate = flightDate;
+
         this.flightDest = flightDest;
         this.flightStartPoint = flightStartPoint;
         this.passengerName = passengerName;

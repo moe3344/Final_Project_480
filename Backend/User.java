@@ -1,7 +1,7 @@
 package Backend;
 
 public class User {
-
+    private int userID;
     private Flight selectedFlight;
     private double dueAmount;
     private String name;
@@ -17,6 +17,18 @@ public class User {
         this.name = userName;
         this.password = password;
 
+    }
+
+    public String getPassword() {
+        return this.password;
+    }
+
+    public void setUserID(int x) {
+        this.userID = x;
+    }
+
+    public int getUserID() {
+        return this.userID;
     }
 
     // Getter methods

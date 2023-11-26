@@ -22,6 +22,7 @@ public class UserManager {
     private String name;
     private String password;
     private static int userID = 1;
+    private boolean payement = false;
 
     // JDBC URL, username, and password of MySQL server
 
@@ -33,6 +34,10 @@ public class UserManager {
     private UserManager() {
 
         // Initialization code, if needed
+    }
+
+    public User getCurrentUser() {
+        return this.currentUser;
     }
 
     public ArrayList<User> getUsers() {
@@ -85,9 +90,9 @@ public class UserManager {
 
                 Flight newFlight = new Flight(results.getInt("FlightID"), results.getString("FlightStartPoint"),
                         results.getString("FlightDest"), results.getDouble("FlightCost"),
-                        results.getDate("FlightArrivalTime"), results.getDate("FlightLeavingTime"),
-                        results.getInt("AvailableBusinessSeats"), results.getInt("AvailableComfortSeats"),
-                        results.getInt("AvailableOrdinarySeats"));
+                        results.getString("FlightArrivalTime"), results.getString("FlightLeavingTime"),
+                        results.getString("bookedBusinessSeats"), results.getString("bookedComfortSeats"),
+                        results.getString("bookedOrdinarySeats"));
 
                 // Adding read object to the arraylist of animals
                 myFlights.add(newFlight);
@@ -109,9 +114,14 @@ public class UserManager {
 
     // Login method using JDBC
     public boolean login(String nameUser, String pass) {
+
+        int x = 1;
         for (User o : users) {
             if (o.getName().equals(nameUser)) {
+
                 currentUser = o;
+                currentUser.setUserID(1);
+                x++;
             }
         }
 
@@ -121,9 +131,7 @@ public class UserManager {
                 preparedStatement.setString(1, nameUser); // Set username first
                 preparedStatement.setString(2, pass); // Set password second
                 try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                    if (resultSet.next()) {
-                        System.out.println("Log in successful");
-                    }
+
                     return resultSet.next(); // true if a matching user is found
 
                 }
@@ -132,9 +140,11 @@ public class UserManager {
             System.out.println("Please sign up first"); // Handle the exception according to your needs
             return false;
         }
+
     }
 
     public void createUser(String username, String password) {
+
         User newUser = new User(username, password);
 
         users.add(newUser);
@@ -189,7 +199,7 @@ public class UserManager {
         }
     }
 
-    public boolean userBookFlight(boolean userInsurance, int receiptNumber, int SeatNumber, String SeatLetter,
+    public void userBookFlight(boolean userInsurance, int receiptNumber, int SeatNumber, String SeatLetter,
             int flightID,
             String phone, String city, String country, String state, String zipCode, String streetName,
             String streetNumber,
@@ -198,8 +208,10 @@ public class UserManager {
         currentUser.setAddress(userAddress);
         currentUser.setPhone(phone);
         Card userCard = new Card(cardNumber, expirationDate, cvv);
+
         currentUser.setCreditCard(userCard);
         Flight userSelectedFlight = myFlights.get(flightID - 1);
+        System.out.println("selectedflight" + userSelectedFlight.getFlightDest());
 
         currentUser.setSelectedFlight(userSelectedFlight);
         Seat userSeat = new Seat(SeatNumber, SeatLetter);
@@ -219,20 +231,94 @@ public class UserManager {
             Receipt userReceipt = new Receipt(receiptNumber, o, totalAmount, "CreditCard");
             currentUser.setCustomerReceipt(userReceipt);
 
-            Ticket userTicket = new Ticket(currentUser.getName(), userSelectedFlight.getFlightLeavingTime(), userSeat,
+            Ticket userTicket = new Ticket(currentUser.getName(), userSeat,
                     totalAmount, userSelectedFlight.getFlightDest(), userSelectedFlight.getFlightStartPoint());
             currentUser.setSelectedTicket(userTicket);
-            return true;
+            System.out.println("payment done");
+            this.payement = true;
         } else {
             System.out.println("payment declined");
-            return false;
+            this.payement = false;
         }
+        updateUserdata();
+        updateFlightdata();
 
+    }
+
+    public void updateFlightdata() {
+        try (Connection connection = DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASSWORD)) {
+            String updateQuery = "UPDATE FLIGHTS SET ";
+
+            switch (currentUser.getSelectedSeat().getSeatType()) {
+                case "Business":
+
+                    updateQuery += "bookedBusinessSeats = CONCAT(bookedBusinessSeats, ?)";
+                    break;
+                case "Comfort":
+                    updateQuery += "bookedComfortSeats = CONCAT(bookedComfortSeats, ?)";
+                    break;
+                case "Ordinary":
+                    updateQuery += "bookedOrdinarySeats = CONCAT(bookedOrdinarySeats, ?)";
+                    break;
+                default:
+                    System.out.println("Invalid seat type");
+                    return;
+            }
+            String x = "-" + currentUser.getSelectedSeat().stringSeat();
+            updateQuery += " WHERE FlightID = ?";
+
+            try (PreparedStatement preparedStatement = connection.prepareStatement(updateQuery)) {
+                preparedStatement.setString(1, x);
+                preparedStatement.setInt(2, currentUser.getSelectedFlight().getFlightNumber());
+
+                int rowsAffected = preparedStatement.executeUpdate();
+
+                if (rowsAffected > 0) {
+                    System.out.println("Update successful!");
+                } else {
+                    System.out.println("No flight found with the given FlightID.");
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void updateUserdata() {
+
+        try (Connection connection = DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASSWORD)) {
+            String updateQuery = "UPDATE logedusers SET "
+                    + "password=?, dueAmount=?, phone=?, address=?, "
+                    + "selectedSeat=?, flightID=?, flightCost=?, flightDest=?, flightStartPoint=? "
+                    + "WHERE username=?";
+            try (PreparedStatement preparedStatement = connection.prepareStatement(updateQuery)) {
+                preparedStatement.setString(1, currentUser.getPassword());
+                preparedStatement.setDouble(2, currentUser.getDueAmount());
+                preparedStatement.setString(3, currentUser.getPhone());
+                preparedStatement.setString(4, currentUser.getAddress().stringAddress());
+                preparedStatement.setString(5, currentUser.getSelectedSeat().stringSeat());
+                preparedStatement.setInt(6, currentUser.getSelectedFlight().getFlightNumber());
+                preparedStatement.setDouble(7, currentUser.getSelectedFlight().getFlightCost());
+                preparedStatement.setString(8, currentUser.getSelectedFlight().getFlightDest());
+                preparedStatement.setString(9, currentUser.getSelectedFlight().getFlightStartPoint());
+                preparedStatement.setString(10, currentUser.getName()); // Set the username in the WHERE clause
+
+                int rowsAffected = preparedStatement.executeUpdate();
+
+                if (rowsAffected > 0) {
+                    System.out.println("Update successful!");
+                } else {
+                    System.out.println("No user found with the given username.");
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     public boolean validatePayment(Card creditCard) {
         if (creditCard.getCardNumber().length() == 16) {
-            String comparisonDate = "11/2023";
+            String comparisonDate = "11/23";
             String inputDate = creditCard.getExpirationDate();
 
             // Compare the year part
@@ -270,21 +356,35 @@ public class UserManager {
 
         // Example signup
 
-        boolean signupResult = userManager.signUp("Mohamad_Hammoud", "5");
+        // boolean signupResult = userManager.signUp("hamad_Hammoud", "1235");
         // if (signupResult) {
         // System.out.println("Signup successful!");
         // }
-        for (User x : userManager.getUsers()) {
-            System.out.println("dd" + x.getName());
-        }
-        userManager.browseFLights();
-        boolean loginResult = userManager.login("Mohamad_Hammoud", "5");
+
+        // for (User x : userManager.getUsers()) {
+        // System.out.println("dd" + x.getName());
+        // }
+
+        boolean loginResult = userManager.login("ohamad_Hammoud", "1235");
         if (loginResult) {
             System.out.println("Login successful!");
-
-        } else {
-            System.out.println("fucked up ");
+            System.out.println("current user is " +
+                    userManager.getCurrentUser().getName());
         }
+        System.out.println("current user sign is " +
+                userManager.getCurrentUser().getName());
+        // else {
+        // System.out.println("fucked up ");
+        // }
 
+        userManager.browseFLights();
+        userManager.userBookFlight(true, 12, 1, "B", 1, "4038883344", "Calgary",
+                "Canada", "AB", "T3E 3e2", "street",
+                "12",
+                "1234543643214567", "07/27", 888);
+        // String number = userManager.getCurrentUser().getCreditCard().getCardNumber();
+        // boolean x =
+        // userManager.validatePayment(userManager.getCurrentUser().getCreditCard());
+        // System.out.println("x is " + number);
     }
 }

@@ -1,4 +1,5 @@
 package Backend;
+
 public class Address {
     private String streetNumber;
     private String streetName;
@@ -65,5 +66,10 @@ public class Address {
 
     public void setCountry(String country) {
         this.country = country;
+    }
+
+    public String stringAddress() {
+        String selAddress = streetNumber + " " + streetName + " , " + city + " , " + country;
+        return selAddress;
     }
 }

@@ -1,15 +1,19 @@
 package Backend;
+
 import java.sql.*;
 import java.util.ArrayList;
 
-public class Connector{
- protected Connection dbConnect;
+public class Connector {
+  protected Connection dbConnect;
   protected ResultSet results;
-   protected ArrayList < Flight > myFlights;
-  Connector(){
-     myFlights = new ArrayList <> ();
+  protected ArrayList<Flight> myFlights;
+
+  Connector() {
+    myFlights = new ArrayList<>();
     createConnection();
-selectFLights();}
+    selectFLights();
+  }
+
   public void createConnection() {
 
     try {
@@ -18,31 +22,32 @@ selectFLights();}
       e.printStackTrace();
     }
   }
-  public void selectFLights () {
-   
+
+  public void selectFLights() {
 
     try {
 
       Statement myStmt = dbConnect.createStatement();
       results = myStmt.executeQuery("SELECT * FROM flights");
-      
 
       while (results.next()) {
-        
 
-        Flight newFlight = new Flight(results.getInt("FlightID"), results.getString("FlightStartPoint"), results.getString("FlightDest"),results.getDouble("FlightCost"), results.getDate("FlightArrivalTime"),results.getDate("FlightLeavingTime"),results.getInt("AvailableBusinessSeats"),results.getInt("AvailableComfortSeats"),results.getInt("AvailableOrdinarySeats"));
+        Flight newFlight = new Flight(results.getInt("FlightID"), results.getString("FlightStartPoint"),
+            results.getString("FlightDest"), results.getDouble("FlightCost"), results.getString("FlightArrivalTime"),
+            results.getString("FlightLeavingTime"), results.getString("AvailableBusinessSeats"),
+            results.getString("AvailableComfortSeats"), results.getString("AvailableOrdinarySeats"));
 
-        //Adding read object to the arraylist of animals
+        // Adding read object to the arraylist of animals
         myFlights.add(newFlight);
-        
+
       }
-    
+
+    } catch (SQLException ex) {
+      ex.printStackTrace();
     }
-    catch (SQLException ex) {
-        ex.printStackTrace();
-      }
   }
-  public ArrayList<Flight> getFlights(){
+
+  public ArrayList<Flight> getFlights() {
     return myFlights;
 
   }
