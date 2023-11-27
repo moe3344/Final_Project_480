@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import loginAndSignUp from '../api/loginSignup';
+import SeatMap from '../components/seatMap'
 
 const Login = (props) => {
   const [signUp, setSignUp] = useState(false);
@@ -43,7 +44,7 @@ const Login = (props) => {
   };
 
   return (
-    <div>
+    <div className='login-page'>
       {signUp ? <h1>Sign Up</h1> : <h1>Login</h1>}
       <form onSubmit={handleSubmit}>
         <div>
@@ -75,6 +76,7 @@ const Login = (props) => {
     </p> 
       }
       </form>
+      <SeatMap/>
     </div>
   );
 };
