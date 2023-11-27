@@ -38,7 +38,7 @@ function PaymentMethod() {
       };
   return (
     <Form>
-    <h1> Enter Credit Card Information </h1>
+    <h2> Enter Credit Card Information </h2>
       <Form.Group className="mb-3" controlId="formGroupEmail">
         <Form.Control type="email" placeholder="Enter Card Number" 
           onChange={(e) => setCardNumber(e.target.value)}/>

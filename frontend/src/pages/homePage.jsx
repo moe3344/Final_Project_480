@@ -53,7 +53,6 @@ const HomePage = (props) => {
             <DisplayFlights selectedID={setSelectedFlight} data={data}/>
           </Tab>
           <Tab eventKey="profile" title="Select Seat">
-            Tab content for Profile
             {selectedFlight !== 0 ?
             <div>
               <h2> Select Your Seat</h2>
