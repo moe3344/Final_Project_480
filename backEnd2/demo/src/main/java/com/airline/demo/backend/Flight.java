@@ -1,5 +1,4 @@
-package com.airline.demo;
-import java.util.Date;
+package com.airline.demo.backend;
 
 
 public class Flight {
@@ -7,24 +6,23 @@ public class Flight {
     private String flightStartPoint;
     private String flightDest;
 
-  
     private double flightCost;
-    private Date flightArrivalTime;
-    private Date flightLeavingTime;
+    private String flightArrivalTime;
+    private String flightLeavingTime;
 
     // Additional data members
-    private int availableBusinessSeats;
-    private int availableComfortSeats;
-    private int availableOrdinarySeats;
+    private String availableBusinessSeats;
+    private String availableComfortSeats;
+    private String availableOrdinarySeats;
 
     // Constructor
     public Flight(int flightNumber, String flightStartPoint, String flightDest,
-                  double flightCost, Date flightArrivalTime, Date flightLeavingTime,
-                  int availableBusinessSeats, int availableComfortSeats, int availableOrdinarySeats) {
+            double flightCost, String flightArrivalTime, String flightLeavingTime,
+            String availableBusinessSeats, String availableComfortSeats, String availableOrdinarySeats) {
         this.flightNumber = flightNumber;
         this.flightStartPoint = flightStartPoint;
         this.flightDest = flightDest;
-       
+
         this.flightCost = flightCost;
         this.flightArrivalTime = flightArrivalTime;
         this.flightLeavingTime = flightLeavingTime;
@@ -46,42 +44,40 @@ public class Flight {
         return flightDest;
     }
 
-  
-
     public double getFlightCost() {
         return flightCost;
     }
 
-    public Date getFlightArrivalTime() {
+    public String getFlightArrivalTime() {
         return flightArrivalTime;
     }
 
-    public Date getFlightLeavingTime() {
+    public String getFlightLeavingTime() {
         return flightLeavingTime;
     }
 
     // Additional getters and setters
-    public int getAvailableBusinessSeats() {
+    public String getAvailableBusinessSeats() {
         return availableBusinessSeats;
     }
 
-    public void setAvailableBusinessSeats(int availableBusinessSeats) {
+    public void setAvailableBusinessSeats(String availableBusinessSeats) {
         this.availableBusinessSeats = availableBusinessSeats;
     }
 
-    public int getAvailableComfortSeats() {
+    public String getAvailableComfortSeats() {
         return availableComfortSeats;
     }
 
-    public void setAvailableComfortSeats(int availableComfortSeats) {
+    public void setAvailableComfortSeats(String availableComfortSeats) {
         this.availableComfortSeats = availableComfortSeats;
     }
 
-    public int getAvailableOrdinarySeats() {
+    public String getAvailableOrdinarySeats() {
         return availableOrdinarySeats;
     }
 
-    public void setAvailableOrdinarySeats(int availableOrdinarySeats) {
+    public void setAvailableOrdinarySeats(String availableOrdinarySeats) {
         this.availableOrdinarySeats = availableOrdinarySeats;
     }
 
@@ -98,21 +94,16 @@ public class Flight {
         this.flightDest = flightDest;
     }
 
-   
-
     public void setFlightCost(double flightCost) {
         this.flightCost = flightCost;
     }
 
-    public void setFlightArrivalTime(Date flightArrivalTime) {
+    public void setFlightArrivalTime(String flightArrivalTime) {
         this.flightArrivalTime = flightArrivalTime;
     }
 
-    public void setFlightLeavingTime(Date flightLeavingTime) {
+    public void setFlightLeavingTime(String flightLeavingTime) {
         this.flightLeavingTime = flightLeavingTime;
     }
 
-    
 }
-
-
