@@ -20,7 +20,7 @@ function App() {
     <div className="App">
       {!loggedIn ? <Login emailProp={setEmail} passwordProp={setPassword}
       loggedInProp={setLoggedIn}/> :
-      <div> <HomePage email={email}/> </div> }
+      <div> <HomePage email={email} password={password}/> </div> }
     </div>
   );
 }

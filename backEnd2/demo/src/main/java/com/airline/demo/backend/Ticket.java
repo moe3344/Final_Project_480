@@ -3,6 +3,8 @@ package com.airline.demo.backend;
 
 
 
+import java.sql.Date;
+
 public class Ticket {
     private int ticketNumber;
     private String passengerName;
@@ -56,3 +58,4 @@ public class Ticket {
         this.ticketPrice = ticketPrice;
     }
 }
+

@@ -9,6 +9,7 @@ import com.airline.demo.backend.Flight;
 import com.airline.demo.backend.Receipt;
 import com.airline.demo.backend.Seat;
 import com.airline.demo.backend.Ticket;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators.None;
 
 public class UserManager {
     private User currentUser;
@@ -148,6 +149,17 @@ public class UserManager {
 
     }
 
+    public User loginReturnUser(String nameUser, String pass) {
+
+        int x = 1;
+        for (User o : users) {
+            if (o.getName().equals(nameUser)) {
+                return o;
+            }
+        }
+        return new User("Not Found", "Not Found");
+    }
+
     public void createUser(String username, String password) {
 
         User newUser = new User(username, password);
@@ -208,7 +220,8 @@ public class UserManager {
             int flightID,
             String phone, String city, String country, String state, String zipCode, String streetName,
             String streetNumber,
-            String cardNumber, String expirationDate, int cvv) {
+            String cardNumber, String expirationDate, int cvv, User currentLoggedUser) {
+
         Address userAddress = new Address(streetNumber, streetName, city, state, zipCode, country);
         currentUser.setAddress(userAddress);
         currentUser.setPhone(phone);
@@ -230,7 +243,7 @@ public class UserManager {
 
         currentUser.setFlightCost(totalAmount);
         boolean validPayment = validatePayment(userCard);
-        if (validPayment) {
+        if (!validPayment) {
             Date o = new Date();
 
             Receipt userReceipt = new Receipt(receiptNumber, o, totalAmount, "CreditCard");
@@ -323,12 +336,12 @@ public class UserManager {
 
     public boolean validatePayment(Card creditCard) {
         if (creditCard.getCardNumber().length() == 16) {
-            String comparisonDate = "11/23";
+            String comparisonDate = "11-23";
             String inputDate = creditCard.getExpirationDate();
 
             // Compare the year part
-            String[] inputParts = inputDate.split("/");
-            String[] comparisonParts = comparisonDate.split("/");
+            String[] inputParts = inputDate.split("-");
+            String[] comparisonParts = comparisonDate.split("-");
 
             // Compare years
             int yearComparison = Integer.parseInt(inputParts[1]) - Integer.parseInt(comparisonParts[1]);

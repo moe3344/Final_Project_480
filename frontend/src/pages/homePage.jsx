@@ -2,18 +2,22 @@ import React, { useState, useEffect } from 'react';
 
 import Tab from 'react-bootstrap/Tab';
 import Tabs from 'react-bootstrap/Tabs';
+import Button from 'react-bootstrap/esm/Button';
 
 import TextLinkExample from '../components/navBar';
 import DisplayFlights from '../components/flightDisplayHeader';
-import ShowMap from '../components/showFlightMap';
+import SeatMapDisplay from '../components/seatMapDisplay';
 import PaymentMethod from '../components/completePayment';
 
 
 const HomePage = (props) => {
     const [selectedFlight, setSelectedFlight] = useState(0);
+    const [seat, setSelectedSeat] = useState("Please Select Seat!");
     const [selectedTab, setSelectedTab] = useState('home');
     const [data, setData] = useState(null);
     const [enterPayment, setEnterPayment] = useState(true);
+    const [seatLetter, setSeatLetter] = useState("");
+    const [seatNumber, setSeatNumber] = useState(0);
 
     useEffect(() => {
       // Define the URL of your localhost server
@@ -50,18 +54,27 @@ const HomePage = (props) => {
         >
           <Tab eventKey="home" title="Select Flight">
             <h2> Select From Avaliable Flights</h2>
-            <DisplayFlights selectedID={setSelectedFlight} data={data}/>
+            <DisplayFlights selectedID={setSelectedFlight} data={data}
+            nextTab={setSelectedTab}/>
           </Tab>
-          <Tab eventKey="profile" title="Select Seat">
+          <Tab eventKey="seats" title="Select Seat">
             {selectedFlight !== 0 ?
             <div>
               <h2> Select Your Seat</h2>
-              <ShowMap flightProp={selectedFlight}/>
+              {seatLetter &&
+              <div>
+                <span>Currently Selected Seat: {seatLetter}-{seatNumber} for {selectedFlight.flightCost}$     </span>
+                <Button  onClick={() => setSelectedTab("contact")}variant="primary">Click Here to Checkout</Button>{' '}
+              </div> }
+              <SeatMapDisplay flightProp={selectedFlight} seat={seat}
+              selectedLetter={setSeatLetter} selectedSeat={setSeatNumber}/>
             </div> : 
-            <h2>Please First Select a Flight</h2>}
+            <h1>Please First Select a Flight<br/>Then Select your Seat!</h1>}
           </Tab>
           <Tab eventKey="contact" title="Pay For Ticket">
-            {enterPayment && <PaymentMethod />}
+            {enterPayment && <PaymentMethod username={props.email} password={props.password} 
+            selectedLetter={seatLetter} flightId={selectedFlight.flightNumber}
+            selectedSeat={seatNumber}/>}
           </Tab>
         </Tabs>
     </div>

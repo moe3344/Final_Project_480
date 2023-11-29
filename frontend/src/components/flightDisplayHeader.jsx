@@ -6,11 +6,13 @@ function DisplayFlights(props) {
       if (!data) return; // Check if not data exist currently
 
         return data.map((item) => (
-            <tr onClick={() => props.selectedID(item)}>
+            <tr onClick={() => { props.selectedID(item)
+            props.nextTab("seats")}}>
                 <td>{item.flightNumber}</td>
                 <td>{item.flightStartPoint}</td>
+                <td>{item.flightArrivalTime}</td>
                 <td>{item.flightDest}</td>
-                <td>{item.seats}</td>
+                <td>{item.flightLeavingTime}</td>
                 <td>{item.flightCost}</td>
             </tr>
           ));
@@ -21,9 +23,10 @@ function DisplayFlights(props) {
         <tr>
           <th>FlightID</th>
           <th>Take Off</th>
-          <th>Destination</th>
-          <th>Available Seats</th>
-          <th>Flight Cost</th>
+          <th>Take Off Time</th>
+          <th>Arrival Destination</th>
+          <th>Arrival Time</th>
+          <th>Fligh Cost</th>
         </tr>
       </thead>
       <tbody>

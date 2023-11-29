@@ -1,6 +1,8 @@
 package com.airline.demo.backend;
 
 
+import java.util.Date;
+
 public class Flight {
     private int flightNumber;
     private String flightStartPoint;
