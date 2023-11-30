@@ -318,12 +318,12 @@ public class UserManager {
 
     public boolean validatePayment(Card creditCard) {
         if (creditCard.getCardNumber().length() == 16) {
-            String comparisonDate = "11/23";
+            String comparisonDate = "11-23";
             String inputDate = creditCard.getExpirationDate();
 
             // Compare the year part
-            String[] inputParts = inputDate.split("/");
-            String[] comparisonParts = comparisonDate.split("/");
+            String[] inputParts = inputDate.split("-");
+            String[] comparisonParts = comparisonDate.split("-");
 
             // Compare years
             int yearComparison = Integer.parseInt(inputParts[1]) - Integer.parseInt(comparisonParts[1]);
@@ -356,7 +356,7 @@ public class UserManager {
 
         // Example signup
 
-        // boolean signupResult = userManager.signUp("hamad_Hammoud", "1235");
+        // boolean signupResult = userManager.signUp("Dennis", "1235");
         // if (signupResult) {
         // System.out.println("Signup successful!");
         // }
@@ -365,7 +365,7 @@ public class UserManager {
         // System.out.println("dd" + x.getName());
         // }
 
-        boolean loginResult = userManager.login("ohamad_Hammoud", "1235");
+        boolean loginResult = userManager.login("jayden", "1235");
         if (loginResult) {
             System.out.println("Login successful!");
             System.out.println("current user is " +
@@ -378,13 +378,15 @@ public class UserManager {
         // }
 
         userManager.browseFLights();
-        userManager.userBookFlight(true, 12, 1, "B", 1, "4038883344", "Calgary",
-                "Canada", "AB", "T3E 3e2", "street",
-                "12",
-                "1234543643214567", "07/27", 888);
-        // String number = userManager.getCurrentUser().getCreditCard().getCardNumber();
+        userManager.userBookFlight(true, 12, 1, "A", 2, "4038883344", "Calgary",
+                "Canada", "AB", "T3E 3e2", "university drive",
+                "1234534",
+                "1234543643214567", "07-27", 888);
+        // String number =
+        // userManager.getCurrentUser().getCreditCard().getCardNumber();
         // boolean x =
         // userManager.validatePayment(userManager.getCurrentUser().getCreditCard());
         // System.out.println("x is " + number);
+
     }
 }
