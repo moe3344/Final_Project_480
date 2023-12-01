@@ -98,14 +98,16 @@ public class UserManager {
                 myFlights.add(newFlight);
 
             }
-            for (Flight o : myFlights) {
-                System.out.print("    *   flightid: " + o.getFlightNumber());
-                System.out.print("    *   flight start point: " + o.getFlightStartPoint());
-                System.out.print("    *   flight Destenation point: " + o.getFlightDest());
-                System.out.print("    *   flight cost is:" + o.getFlightCost());
-                System.out.println();
-                System.out.println();
-            }
+            /*
+             * for (Flight o : myFlights) {
+             * System.out.print("    *   flightid: " + o.getFlightNumber());
+             * System.out.print("    *   flight start point: " + o.getFlightStartPoint());
+             * System.out.print("    *   flight Destenation point: " + o.getFlightDest());
+             * System.out.print("    *   flight cost is:" + o.getFlightCost());
+             * System.out.println();
+             * System.out.println();
+             * }
+             */
 
         } catch (SQLException ex) {
             ex.printStackTrace();
@@ -141,6 +143,47 @@ public class UserManager {
             return false;
         }
 
+    }
+
+    public void cancelFlight() {
+        int canceledUserID = currentUser.getUserID();
+        Seat canceledSeat = currentUser.getSelectedSeat();
+
+        for (User s : users) {
+            if (s.getName().equals(currentUser.getName())) {
+                s.setSelectedFlight(null);
+                s.setSelectedSeat(null);
+                s.setDueAmount(0);
+            }
+        }
+
+        try (Connection connection = DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASSWORD)) {
+            String updateQuery = "UPDATE logedusers SET "
+                    + "dueAmount=?, "
+                    + "selectedSeat=?, flightID=?, flightCost=?, flightDest=?, flightStartPoint=? "
+                    + "WHERE username=?";
+            try (PreparedStatement preparedStatement = connection.prepareStatement(updateQuery)) {
+                preparedStatement.setDouble(1, 0); // Set dueAmount at index 1
+
+                preparedStatement.setString(2, ""); // Set selectedSeat at index 2
+                preparedStatement.setInt(3, 0); // Set flightID at index 3
+                preparedStatement.setDouble(4, 0); // Set flightCost at index 4
+                preparedStatement.setString(5, ""); // Set flightDest at index 5
+                preparedStatement.setString(6, ""); // Set flightStartPoint at index 6
+
+                preparedStatement.setString(7, currentUser.getName()); // Set the username in the WHERE clause
+
+                int rowsAffected = preparedStatement.executeUpdate();
+
+                if (rowsAffected > 0) {
+                    System.out.println("Update successful!");
+                } else {
+                    System.out.println("No user found with the given username.");
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     public void createUser(String username, String password) {
@@ -376,12 +419,15 @@ public class UserManager {
         // else {
         // System.out.println("fucked up ");
         // }
+        FlightAttendant attendant = new FlightAttendant("Hello", "123");
 
         userManager.browseFLights();
         userManager.userBookFlight(true, 12, 1, "A", 2, "4038883344", "Calgary",
                 "Canada", "AB", "T3E 3e2", "university drive",
                 "1234534",
                 "1234543643214567", "07-27", 888);
+        attendant.showPassengerList(userManager.getUsers());
+        userManager.cancelFlight();
         // String number =
         // userManager.getCurrentUser().getCreditCard().getCardNumber();
         // boolean x =
