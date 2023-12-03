@@ -1,7 +1,4 @@
-package com.airline.demo.backend;
-
-
-
+package Backend;
 
 import java.sql.Date;
 
@@ -58,4 +55,3 @@ public class Ticket {
         this.ticketPrice = ticketPrice;
     }
 }
-

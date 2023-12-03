@@ -1,4 +1,4 @@
-package com.airline.demo.backend;
+package Backend;
 
 public class Address {
     private String streetNumber;

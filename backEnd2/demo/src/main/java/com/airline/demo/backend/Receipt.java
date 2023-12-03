@@ -1,4 +1,4 @@
-package com.airline.demo.backend;
+package Backend;
 import java.util.Date;
 
 public class Receipt {

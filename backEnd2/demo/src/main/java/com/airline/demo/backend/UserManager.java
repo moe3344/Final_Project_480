@@ -1,15 +1,15 @@
-package com.airline.demo.backend;
+package Backend;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.ArrayList;
 import java.util.Date;
 
-import com.airline.demo.backend.Address;
-import com.airline.demo.backend.Flight;
-import com.airline.demo.backend.Receipt;
-import com.airline.demo.backend.Seat;
-import com.airline.demo.backend.Ticket;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators.None;
+import Backend.Address;
+import Backend.Flight;
+import Backend.Receipt;
+import Backend.Seat;
+import Backend.Ticket;
 
 public class UserManager {
     private User currentUser;
@@ -50,7 +50,6 @@ public class UserManager {
 
             Statement myStmt = dbConnect.createStatement();
             results = myStmt.executeQuery("SELECT * FROM logedusers");
-            users.clear();
 
             while (results.next()) {
 
@@ -86,8 +85,6 @@ public class UserManager {
 
             Statement myStmt = dbConnect.createStatement();
             results = myStmt.executeQuery("SELECT * FROM flights");
-            myFlights.clear();
-
 
             while (results.next()) {
 
@@ -101,21 +98,20 @@ public class UserManager {
                 myFlights.add(newFlight);
 
             }
-            for (Flight o : myFlights) {
-                System.out.print("    *   flightid: " + o.getFlightNumber());
-                System.out.print("    *   flight start point: " + o.getFlightStartPoint());
-                System.out.print("    *   flight Destenation point: " + o.getFlightDest());
-                System.out.print("    *   flight cost is:" + o.getFlightCost());
-                System.out.println();
-                System.out.println();
-            }
+            /*
+             * for (Flight o : myFlights) {
+             * System.out.print("    *   flightid: " + o.getFlightNumber());
+             * System.out.print("    *   flight start point: " + o.getFlightStartPoint());
+             * System.out.print("    *   flight Destenation point: " + o.getFlightDest());
+             * System.out.print("    *   flight cost is:" + o.getFlightCost());
+             * System.out.println();
+             * System.out.println();
+             * }
+             */
 
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
-    }
-    public ArrayList<Flight> returnFlights() {
-        return myFlights;
     }
 
     // Login method using JDBC
@@ -149,15 +145,45 @@ public class UserManager {
 
     }
 
-    public User loginReturnUser(String nameUser, String pass) {
+    public void cancelFlight() {
+        int canceledUserID = currentUser.getUserID();
+        Seat canceledSeat = currentUser.getSelectedSeat();
 
-        int x = 1;
-        for (User o : users) {
-            if (o.getName().equals(nameUser)) {
-                return o;
+        for (User s : users) {
+            if (s.getName().equals(currentUser.getName())) {
+                s.setSelectedFlight(null);
+                s.setSelectedSeat(null);
+                s.setDueAmount(0);
             }
         }
-        return new User("Not Found", "Not Found");
+
+        try (Connection connection = DriverManager.getConnection(JDBC_URL, DB_USER, DB_PASSWORD)) {
+            String updateQuery = "UPDATE logedusers SET "
+                    + "dueAmount=?, "
+                    + "selectedSeat=?, flightID=?, flightCost=?, flightDest=?, flightStartPoint=? "
+                    + "WHERE username=?";
+            try (PreparedStatement preparedStatement = connection.prepareStatement(updateQuery)) {
+                preparedStatement.setDouble(1, 0); // Set dueAmount at index 1
+
+                preparedStatement.setString(2, ""); // Set selectedSeat at index 2
+                preparedStatement.setInt(3, 0); // Set flightID at index 3
+                preparedStatement.setDouble(4, 0); // Set flightCost at index 4
+                preparedStatement.setString(5, ""); // Set flightDest at index 5
+                preparedStatement.setString(6, ""); // Set flightStartPoint at index 6
+
+                preparedStatement.setString(7, currentUser.getName()); // Set the username in the WHERE clause
+
+                int rowsAffected = preparedStatement.executeUpdate();
+
+                if (rowsAffected > 0) {
+                    System.out.println("Update successful!");
+                } else {
+                    System.out.println("No user found with the given username.");
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     public void createUser(String username, String password) {
@@ -220,8 +246,7 @@ public class UserManager {
             int flightID,
             String phone, String city, String country, String state, String zipCode, String streetName,
             String streetNumber,
-            String cardNumber, String expirationDate, int cvv, User currentLoggedUser) {
-
+            String cardNumber, String expirationDate, int cvv) {
         Address userAddress = new Address(streetNumber, streetName, city, state, zipCode, country);
         currentUser.setAddress(userAddress);
         currentUser.setPhone(phone);
@@ -243,7 +268,7 @@ public class UserManager {
 
         currentUser.setFlightCost(totalAmount);
         boolean validPayment = validatePayment(userCard);
-        if (!validPayment) {
+        if (validPayment) {
             Date o = new Date();
 
             Receipt userReceipt = new Receipt(receiptNumber, o, totalAmount, "CreditCard");
@@ -366,43 +391,48 @@ public class UserManager {
     // Other methods and properties related to user management
 
     // Example usage:
-//    public static void main(String[] args) {
-//        UserManager userManager = UserManager.getInstance();
-//        userManager.populateUsers();
-//
-//        // Example login
-//
-//        // Example signup
-//
-//        // boolean signupResult = userManager.signUp("hamad_Hammoud", "1235");
-//        // if (signupResult) {
-//        // System.out.println("Signup successful!");
-//        // }
-//
-//        // for (User x : userManager.getUsers()) {
-//        // System.out.println("dd" + x.getName());
-//        // }
-//
-//        boolean loginResult = userManager.login("ohamad_Hammoud", "1235");
-//        if (loginResult) {
-//            System.out.println("Login successful!");
-//            System.out.println("current user is " +
-//                    userManager.getCurrentUser().getName());
-//        }
-//        System.out.println("current user sign is " +
-//                userManager.getCurrentUser().getName());
-//        // else {
-//        // System.out.println("fucked up ");
-//        // }
-//
-//        userManager.browseFLights();
-//        userManager.userBookFlight(true, 12, 1, "B", 1, "4038883344", "Calgary",
-//                "Canada", "AB", "T3E 3e2", "street",
-//                "12",
-//                "1234543643214567", "07/27", 888);
-//        // String number = userManager.getCurrentUser().getCreditCard().getCardNumber();
-//        // boolean x =
-//        // userManager.validatePayment(userManager.getCurrentUser().getCreditCard());
-//        // System.out.println("x is " + number);
-//    }
+    public static void main(String[] args) {
+        UserManager userManager = UserManager.getInstance();
+        userManager.populateUsers();
+
+        // Example login
+
+        // Example signup
+
+        // boolean signupResult = userManager.signUp("Dennis", "1235");
+        // if (signupResult) {
+        // System.out.println("Signup successful!");
+        // }
+
+        // for (User x : userManager.getUsers()) {
+        // System.out.println("dd" + x.getName());
+        // }
+
+        boolean loginResult = userManager.login("jayden", "1235");
+        if (loginResult) {
+            System.out.println("Login successful!");
+            System.out.println("current user is " +
+                    userManager.getCurrentUser().getName());
+        }
+        System.out.println("current user sign is " +
+                userManager.getCurrentUser().getName());
+        // else {
+        // System.out.println("fucked up ");
+        // }
+        FlightAttendant attendant = new FlightAttendant("Hello", "123");
+
+        userManager.browseFLights();
+        userManager.userBookFlight(true, 12, 1, "A", 2, "4038883344", "Calgary",
+                "Canada", "AB", "T3E 3e2", "university drive",
+                "1234534",
+                "1234543643214567", "07-27", 888);
+        attendant.showPassengerList(userManager.getUsers());
+        userManager.cancelFlight();
+        // String number =
+        // userManager.getCurrentUser().getCreditCard().getCardNumber();
+        // boolean x =
+        // userManager.validatePayment(userManager.getCurrentUser().getCreditCard());
+        // System.out.println("x is " + number);
+
+    }
 }
